@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.wonno</groupId>
+    <artifactId>semver-tool</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <url>https://github.com/Wonno/groovy-semver-tool</url>
+
+    <properties>
+        <java.version>1.8.0</java.version>
+        <lib.version.groovy-all>2.4.16</lib.version.groovy-all>
+        <lib.version.spock-core>1.3-groovy-2.4</lib.version.spock-core>
+        <maven.build.timestamp.format>yyyy-MM dd-HH:mm:ss</maven.build.timestamp.format>
+        <plg.version.gmavenplus-plugin>1.8.1</plg.version.gmavenplus-plugin>
+        <plg.version.maven-cobertura-plugin>2.7</plg.version.maven-cobertura-plugin>
+        <plg.version.maven-enforcer-plugin>1.4.1</plg.version.maven-enforcer-plugin>
+        <plg.version.maven-surefire-plugin>2.21.0</plg.version.maven-surefire-plugin>
+        <plg.version.sortpom-maven-plugin>2.11.0</plg.version.sortpom-maven-plugin>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${lib.version.groovy-all}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.spockframework</groupId>
+                <artifactId>spock-core</artifactId>
+                <version>${lib.version.spock-core}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/groovy</sourceDirectory>
+        <testSourceDirectory>src/test/groovy</testSourceDirectory>
+
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <groupId>com.github.ekryd.sortpom</groupId>
+                    <artifactId>sortpom-maven-plugin</artifactId>
+                    <version>${plg.version.sortpom-maven-plugin}</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>sort</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <createBackupFile>false</createBackupFile>
+                        <sortProperties>true</sortProperties>
+                        <nrOfIndentSpace>4</nrOfIndentSpace>
+                        <sortDependencies>groupId,artifactId</sortDependencies>
+                        <sortPlugins>groupId,artifactId</sortPlugins>
+                        <keepBlankLines>true</keepBlankLines>
+                        <expandEmptyElements>false</expandEmptyElements>
+                        <lineSeparator>\n</lineSeparator>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${plg.version.maven-enforcer-plugin}</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <fail>true</fail>
+                        <rules>
+                            <DependencyConvergence />
+                            <requireJavaVersion>
+                                <message>You are running an older version of Java.</message>
+                                <message>At least JDK ${java.version} is required.</message>
+                                <version>[${java.version},)</version>
+                            </requireJavaVersion>
+                            <requireMavenVersion>
+                                <message>Minimum Maven version ${project.prerequisites.maven} is required.</message>
+                                <version>[3.5.4,)</version>
+                            </requireMavenVersion>
+                            <requireReleaseDeps>
+                                <message>No Snapshots allowed for release!</message>
+                                <onlyWhenRelease>true</onlyWhenRelease>
+                            </requireReleaseDeps>
+                        </rules>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${plg.version.maven-surefire-plugin}</version>
+                    <configuration>
+                        <failIfNoTests>true</failIfNoTests>
+                        <useFile>false</useFile>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.gmavenplus</groupId>
+                    <artifactId>gmavenplus-plugin</artifactId>
+                    <version>${plg.version.gmavenplus-plugin}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>addSources</goal>
+                                <goal>addTestSources</goal>
+                                <goal>compile</goal>
+                                <goal>compileTests</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>${plg.version.maven-cobertura-plugin}</version>
+                    <configuration>
+                        <formats>
+                            <format>xml</format>
+                        </formats>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.github.ekryd.sortpom</groupId>
+                <artifactId>sortpom-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+    </build>
+
+</project>
