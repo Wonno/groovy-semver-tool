@@ -1,5 +1,8 @@
+package com.github.wonno.semver
+
 import spock.lang.Specification
 import spock.lang.Unroll
+
 
 class TestSemver extends Specification {
 
@@ -142,10 +145,10 @@ class TestSemver extends Specification {
     }
 
     def 'get release'() {
-        when:
-        def semver = new Semver("0.2.1-rc1.0+build-1234")
-        then:
-        semver.release() == "0.2.1"
+        setup:
+        def semver = new Semver("0.2.1-rc1.0+build-1234").release()
+        expect:
+        semver.text() == "0.2.1"
     }
 
     def 'bump major'() {
@@ -249,5 +252,97 @@ class TestSemver extends Specification {
         "0.0.0"         | _
         "1.2.3-alpha01" | _
     }
+
+    @Unroll
+    def '#v1 #operator #v2'(def v1, char operator, def v2) {
+        setup:
+        v1 = Semver.parse(v1)
+        v2 = Semver.parse(v2)
+        expect:
+        switch (operator) {
+            case '<':
+                v1 <=> v2 == -1
+                and:
+                v2 <=> v1 == 1
+                break;
+            case '>':
+                v1 <=> v2 == +1
+                and:
+                v2 <=> v1 == -1
+                break
+            case '=':
+                v1 <=> v2 == 0
+                and:
+                v2 <=> v1 == 0
+                break
+            default:
+                throw new IllegalArgumentException("Unknown operator '${operator}'")
+        }
+        where:
+        v1                  | operator | v2
+        "1.2.3"             | '<'      | "2.2.3"
+        "1.0.0-alpha"       | '<'      | "1.0.0-alpha.1"
+        "1.0.0-alpha.1"     | '<'      | "1.0.0-alpha.beta"
+        "1.0.0-alpha.beta"  | '<'      | "1.0.0-beta"
+        "1.0.0-beta"        | '<'      | "1.0.0-beta.2"
+        "1.0.0-beta.2"      | '<'      | "1.0.0-beta.11"
+        "1.0.0-beta.2.4"    | '>'      | "1.0.0-beta.2.3"
+        "1.0.0-beta.2.4"    | '<'      | "1.0.0-beta.2.4.0"
+        "1.0.0-beta.2.ab"   | '<'      | "1.0.0-beta.2.ab.0"
+        "1.0.0-beta.2.ab.1" | '>'      | "1.0.0-beta.2.ab.0"
+        "1.0.0-beta.11"     | '<'      | "1.0.0-rc.1"
+        "1.0.0-rc.1"        | '<'      | "1.0.0"
+        "1.0.0"             | '>'      | "1.0.0-rc.1"
+        "1.0.0-alpha"       | '>'      | "1.0.0-666"
+        "1.0.0"             | '='      | "1.0.0"
+        "1.0.1"             | '>'      | "1.0.0-rc1"
+        "1.0.0-beta2"       | '>'      | "1.0.0-beta11"
+        "1.0.0-2"           | '<'      | "1.0.0-11"
+        "1.0.0-beta1+a"     | '<'      | "1.0.0-beta2+z"
+        "1.0.0-beta2+x"     | '='      | "1.0.0-beta2+y"
+        "1.0.0-12.beta2+x"  | '>'      | "1.0.0-11.beta2+y"
+        "1.0.0+x"           | '='      | "1.0.0+y"
+        "0.2.1"             | '<'      | "0.2.2"
+        "1.2.1"             | '='      | "1.2.1"
+        "0.3.1"             | '>'      | "0.2.5"
+        "1.0.0+hash"        | '<'      | "1.0.0"
+    }
+
+    def 'equals same object '() {
+        setup:
+        def v = Semver.parse("1.2.3")
+        when:
+        def v2 = v
+        then:
+        v == v2
+    }
+
+    def 'test equals same values '() {
+        setup:
+        def v1 = Semver.parse("1.2.3")
+        def v2 = Semver.parse("1.2.3")
+        expect:
+        v1 == v2
+    }
+
+
+    def 'test clone'() {
+        setup:
+        def v1 = Semver.parse("1.2.3-rc1+abc")
+        when:
+        def v2 = v1.clone()
+        then:
+        v1 == v2
+        and:
+        v2.text() == "1.2.3-rc1+abc"
+    }
+
+    def 'test toString'() {
+        setup:
+        def v1 = Semver.parse("1.2.3-rc1+abc")
+        expect:
+        v1.text() == v1.toString()
+    }
+
 
 }
