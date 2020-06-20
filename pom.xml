@@ -10,15 +10,32 @@
 
     <url>https://github.com/Wonno/groovy-semver-tool</url>
 
+    <scm>
+        <connection>scm:git:git://github.com/wonno/groovy-semver-tool.git</connection>
+        <developerConnection>scm:git:ssh://github.com:wonno/groovy-semver-tool.git</developerConnection>
+        <url>http://github.com/wonno/groovy-semver-tool/tree/master</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Wonno Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/wonno/groovy-semver-tool</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <java.version>1.8.0</java.version>
         <lib.version.groovy-all>2.4.19</lib.version.groovy-all>
         <lib.version.spock-core>1.3-groovy-2.4</lib.version.spock-core>
         <maven.build.timestamp.format>yyyy-MM dd-HH:mm:ss</maven.build.timestamp.format>
+        <plg.version.flatten-maven-plugin.>1.2.3</plg.version.flatten-maven-plugin.>
         <plg.version.gmavenplus-plugin>1.8.1</plg.version.gmavenplus-plugin>
+        <plg.version.groovydoc-maven-plugin>2.1</plg.version.groovydoc-maven-plugin>
         <plg.version.jacoco-maven-plugin>0.8.5</plg.version.jacoco-maven-plugin>
         <plg.version.maven-cobertura-plugin>2.7</plg.version.maven-cobertura-plugin>
         <plg.version.maven-enforcer-plugin>3.0.0-M3</plg.version.maven-enforcer-plugin>
+        <plg.version.maven-source-plugin>3.2.1</plg.version.maven-source-plugin>
         <plg.version.maven-surefire-plugin>2.21.0</plg.version.maven-surefire-plugin>
         <plg.version.sortpom-maven-plugin>2.11.0</plg.version.sortpom-maven-plugin>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,6 +75,20 @@
 
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>com.bluetrainsoftware.maven</groupId>
+                    <artifactId>groovydoc-maven-plugin</artifactId>
+                    <version>${plg.version.groovydoc-maven-plugin}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                                <goal>attach-docs</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
                 <plugin>
                     <groupId>com.github.ekryd.sortpom</groupId>
                     <artifactId>sortpom-maven-plugin</artifactId>
@@ -117,6 +148,22 @@
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${plg.version.maven-source-plugin}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <attach>true</attach>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${plg.version.maven-surefire-plugin}</version>
                     <configuration>
@@ -151,6 +198,29 @@
                         </formats>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>${plg.version.flatten-maven-plugin.}</version>
+                    <executions>
+                        <execution>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <goals>
+                        <goal>flatten</goal>
+                    </goals>
+                    <configuration>
+                        <flattenMode>ossrh</flattenMode>
+                        <outputDirectory>${project.build.directory}</outputDirectory>
+                        <flattenedPomFilename>flattened-pom.xml</flattenedPomFilename>
+                    </configuration>
+                </plugin>
+
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
@@ -200,12 +270,38 @@
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
         </plugins>
 
     </build>
+
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.bluetrainsoftware.maven</groupId>
+                        <artifactId>groovydoc-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.ekryd.sortpom</groupId>
+                        <artifactId>sortpom-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
