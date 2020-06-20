@@ -12,12 +12,13 @@
 
     <properties>
         <java.version>1.8.0</java.version>
-        <lib.version.groovy-all>2.4.16</lib.version.groovy-all>
+        <lib.version.groovy-all>2.4.19</lib.version.groovy-all>
         <lib.version.spock-core>1.3-groovy-2.4</lib.version.spock-core>
         <maven.build.timestamp.format>yyyy-MM dd-HH:mm:ss</maven.build.timestamp.format>
         <plg.version.gmavenplus-plugin>1.8.1</plg.version.gmavenplus-plugin>
+        <plg.version.jacoco-maven-plugin>0.8.5</plg.version.jacoco-maven-plugin>
         <plg.version.maven-cobertura-plugin>2.7</plg.version.maven-cobertura-plugin>
-        <plg.version.maven-enforcer-plugin>1.4.1</plg.version.maven-enforcer-plugin>
+        <plg.version.maven-enforcer-plugin>3.0.0-M3</plg.version.maven-enforcer-plugin>
         <plg.version.maven-surefire-plugin>2.21.0</plg.version.maven-surefire-plugin>
         <plg.version.sortpom-maven-plugin>2.11.0</plg.version.sortpom-maven-plugin>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,7 +58,6 @@
 
         <pluginManagement>
             <plugins>
-
                 <plugin>
                     <groupId>com.github.ekryd.sortpom</groupId>
                     <artifactId>sortpom-maven-plugin</artifactId>
@@ -151,7 +151,39 @@
                         </formats>
                     </configuration>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${plg.version.jacoco-maven-plugin}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>coverage-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <rule>
+                                        <element>CLASS</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>80%</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -167,6 +199,10 @@
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
         </plugins>
 
