@@ -1,3 +1,9 @@
+package com.github.wonno.semver
+
+import groovy.transform.AutoClone
+import groovy.transform.EqualsAndHashCode
+import static groovy.transform.AutoCloneStyle.*
+
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -8,7 +14,9 @@ enum Bump {
     RELEASE,
 }
 
-class Semver {
+@EqualsAndHashCode
+@AutoClone(style = SERIALIZATION)
+class Semver implements Comparable<Semver>, Serializable {
 
     int major, minor, patch
     String prerel, build
@@ -71,11 +79,11 @@ class Semver {
     }
 
     Semver prerel(String prerel) {
-        return new Semver(release() + opt(prerel, '-'))
+        return new Semver(versionCore() + opt(prerel, '-'))
     }
 
     Semver build(String build) {
-        return new Semver(release() + opt(prerel, '-') + opt(build, '+'))
+        return new Semver(versionCore() + opt(prerel, '-') + opt(build, '+'))
     }
 
     Semver bump(Bump bump) {
@@ -104,15 +112,78 @@ class Semver {
     }
 
     String text() {
-        return "${release()}" + opt(prerel, '-') + opt(build, '+')
+        return versionCore() + opt(prerel, '-') + opt(build, '+')
     }
 
     private static String opt(String value, String sep) {
-        return (value ? "${sep}${value}" : "")
+        return (value ? "${sep}${value}" : "");
     }
 
-    String release() {
+    Semver release() {
+        return new Semver(versionCore())
+    }
+
+    private String versionCore() {
         return "${major}.${minor}.${patch}"
     }
 
+    @Override
+    int compareTo(Semver v) {
+        if (major != v.major) {
+            return major <=> v.major
+        }
+        if (minor != v.minor) {
+            return minor <=> v.minor
+        }
+        if (patch != v.patch) {
+            return patch <=> v.patch
+        }
+        if (prerel != v.prerel) {
+            if (prerel == null) {
+                return 1
+            }
+            if (v.prerel == null) {
+                return -1
+            }
+
+            // Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined
+            // by comparing each dot separated identifier from left to right until a difference is found as follows:
+            List<String> lIdentifiers = prerel.tokenize('.')
+            List<String> rIdentifiers = v.prerel.tokenize('.')
+
+            // Compare element by element - until differnce is found, but only until the shorter identifiers list is consumed
+            for (int i = 0; i < Math.min(lIdentifiers.size(), rIdentifiers.size()); i++) {
+                String l = lIdentifiers[i]
+                String r = rIdentifiers[i]
+                if (l != r) {
+                    // identifiers consisting of only digits are compared numerically and
+                    if (l.isInteger() && r.isInteger()) {
+                        return l.toInteger() <=> r.toInteger()
+                    } else {
+                        // identifiers with letters or hyphens are compared lexically in ASCII sort order.
+                        return l <=> r
+                    }
+                }
+            }
+            //Numeric identifiers always have lower precedence than non-numeric identifiers.
+            //A larger set of pre-release fields has a higher precedence than a smaller set,
+            //if all of the preceding identifiers are equal.
+            return lIdentifiers.size() <=> rIdentifiers.size()
+        }
+
+        if (build != v.build) {
+            if (build == null) {
+                return 1
+            }
+            if (v.build == null) {
+                return -1
+            }
+        }
+        return 0
+    }
+
+    @Override
+    String toString() {
+        return text()
+    }
 }
