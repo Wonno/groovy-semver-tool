@@ -29,11 +29,18 @@ In English:
 mvn clean install
 ```
      
-## Usage
+## Examples
 ```$groovy
-def semver = Semver.validate('1.2.3')
-semver.bumpMajor()
-assert semver.major == 2
+import com.github.wonno.semver.Semver
+
+//version validation
+assert !Semver.validate("1.2.invalid")
+
+//version change
+assert Semver.parse("1.2.3+abcd").prerel("rc1").minor().text()=="1.3.0"
+
+//version comparison
+assert Semver.parse("1.0.7+acf430") < new Semver("1.0.6").patch()
 ```
 
 ## Links
