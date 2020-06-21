@@ -2,7 +2,7 @@ package com.github.wonno.semver
 
 import groovy.transform.AutoClone
 import groovy.transform.EqualsAndHashCode
-import static groovy.transform.AutoCloneStyle.*
+import static groovy.transform.AutoCloneStyle.SERIALIZATION
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -18,8 +18,11 @@ enum Bump {
 @AutoClone(style = SERIALIZATION)
 class Semver implements Comparable<Semver>, Serializable {
 
-    int major, minor, patch
-    String prerel, build
+    final int major
+    final int minor
+    final int patch
+    final String prerel
+    final String build
 
     private final static String NAT = '0|[1-9][0-9]*'
     private final static String ALPHANUM = '[0-9]*[A-Za-z-][0-9A-Za-z-]*'
@@ -86,31 +89,6 @@ class Semver implements Comparable<Semver>, Serializable {
         return new Semver(versionCore() + opt(prerel, '-') + opt(build, '+'))
     }
 
-    Semver bump(Bump bump) {
-        Semver result
-        switch (bump) {
-            case Bump.PATCH:
-                if (prerel || build) {
-                    result = new Semver(major, minor, patch)
-                } else {
-                    result = new Semver(major, minor, patch + 1)
-                }
-                break
-            case Bump.MINOR:
-                result = new Semver(major, minor + 1, 0)
-                break
-            case Bump.MAJOR:
-                result = new Semver(major + 1, 0, 0)
-                break
-            case Bump.RELEASE:
-                result = new Semver(major, minor, patch)
-                break
-            default:
-                throw new IllegalArgumentException("Bump ´${bump}´ is unkown")
-        }
-        return result
-    }
-
     String text() {
         return versionCore() + opt(prerel, '-') + opt(build, '+')
     }
@@ -121,10 +99,6 @@ class Semver implements Comparable<Semver>, Serializable {
 
     Semver release() {
         return new Semver(versionCore())
-    }
-
-    private String versionCore() {
-        return "${major}.${minor}.${patch}"
     }
 
     @Override
@@ -185,5 +159,34 @@ class Semver implements Comparable<Semver>, Serializable {
     @Override
     String toString() {
         return text()
+    }
+
+    private String versionCore() {
+        return "${major}.${minor}.${patch}"
+    }
+
+    private Semver bump(Bump bump) {
+        Semver result
+        switch (bump) {
+            case Bump.PATCH:
+                if (prerel || build) {
+                    result = new Semver(major, minor, patch)
+                } else {
+                    result = new Semver(major, minor, patch + 1)
+                }
+                break
+            case Bump.MINOR:
+                result = new Semver(major, minor + 1, 0)
+                break
+            case Bump.MAJOR:
+                result = new Semver(major + 1, 0, 0)
+                break
+            case Bump.RELEASE:
+                result = new Semver(major, minor, patch)
+                break
+            default:
+                throw new IllegalArgumentException("Bump ´${bump}´ is unkown")
+        }
+        return result
     }
 }
