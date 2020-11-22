@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  github_release:
+    name: Trigger GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.2
+        with:
+          java-version: 8.0.x
+          server-id: github
+
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Publish JAR
+        run: ./mvnw -B release:prepare release:perform
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
