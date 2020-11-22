@@ -27,7 +27,7 @@
     <properties>
         <java.version>1.8.0</java.version>
         <lib.version.groovy-all>2.4.19</lib.version.groovy-all>
-        <lib.version.spock-core>1.3-groovy-2.4</lib.version.spock-core>
+        <lib.version.spock-core>1.3-groovy-2.5</lib.version.spock-core>
         <maven.build.timestamp.format>yyyy-MM dd-HH:mm:ss</maven.build.timestamp.format>
         <plg.version.flatten-maven-plugin.>1.2.3</plg.version.flatten-maven-plugin.>
         <plg.version.gmavenplus-plugin>1.8.1</plg.version.gmavenplus-plugin>
@@ -128,7 +128,7 @@
                     <configuration>
                         <fail>true</fail>
                         <rules>
-                            <DependencyConvergence />
+                            <DependencyConvergence/>
                             <requireJavaVersion>
                                 <message>You are running an older version of Java.</message>
                                 <message>At least JDK ${java.version} is required.</message>
