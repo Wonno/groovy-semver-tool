@@ -1,20 +1,21 @@
 The semver groovy utility
 =========================
 
+[![Build Status](https://travis-ci.org/Wonno/groovy-semver-tool.svg?branch=master)](https://travis-ci.org/Wonno/groovy-semver-tool)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://travis-ci.org/Wonno/groovy-semver-tool/blob/master/LICENSE)
+
+
 semver is a little tool to manipulate the version bumping in a project that follows the [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html) .
 
 Its use are:
   - bump version
   - extract specific version part
+  - compare versions
 
 A  version must match the following regular expression:
 ```
 ^[vV]?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$
 ```
-
-[![Build Status](https://travis-ci.org/Wonno/groovy-semver-tool.svg?branch=master)](https://travis-ci.org/Wonno/groovy-semver-tool)
-[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://travis-ci.org/Wonno/groovy-semver-tool/blob/master/LICENSE)
-
 
 In English:
 - The version must match _X.Y.Z[-PRERELEASE][+BUILD]_ where _X_, _Y_ and _Z_ are non-negative integers.
