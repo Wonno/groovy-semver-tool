@@ -1,18 +1,24 @@
-- name: Checkout project
-  uses: actions/checkout@v2
+name: Release
 
-- name: Setup Java JDK
-  uses: actions/setup-java@v1.4.2
-  with:
-    java-version: 8.0.x
-    server-id: github
+jobs:
+  github_release:
+    name: Trigger GitHub release
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
 
-- name: Configure Git user
-  run: |
-    git config user.email "actions@github.com"
-    git config user.name "GitHub Actions"
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.2
+        with:
+          java-version: 8.0.x
+          server-id: github
 
-- name: Publish JAR
-  run: ./mvnw -B release:prepare release:perform
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Git user
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Publish JAR
+        run: ./mvnw -B release:prepare release:perform
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
