@@ -1,7 +1,7 @@
 The semver groovy utility
 =========================
 
-semver is a little tool to manipulate the version bumping in a project that follows the [semver 2.x][semver] specification.
+semver is a little tool to manipulate the version bumping in a project that follows the [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html) .
 
 Its use are:
   - bump version
