@@ -44,7 +44,7 @@ assert Semver.parse("1.0.7+acf430") < new Semver("1.0.6").patch()
 ```
 
 ## Links
-* [Semver Specification](https://semver.org/lang/en/spec/v2.0.0.html) 
+* [Semver Specification 2.0](https://semver.org/spec/v2.0.0.html) 
 * Inspired by [semver-tool](https://github.com/fsaintjacques/semver-tool/) written in bash.
 
 ## Credits
